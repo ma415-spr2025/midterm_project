@@ -200,6 +200,7 @@ unique_values_f <- unique(chem_categories_f$`name`)
 ```
 
 Let's look at the top 10 most used chemicals in California and in Florida.
+
 ```{r}
 chems_c <- chem_categories_c %>%
   filter(name != "TOTAL)") %>%
@@ -284,7 +285,7 @@ kable(combined_chems,
   add_header_above(c("Chemical Information" = 3))
 ```
 
-Let's look for ones where use is different between the two states. 
+Let's look for ones where use is different between the two states.
 
 ```{r}
 combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
@@ -309,6 +310,7 @@ kable(combined_chems,
 ```
 
 Let's visualize this difference
+
 ```{r}
 ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), y = california_count - florida_count, fill = california_count - florida_count > 0)) +
   geom_bar(stat = "identity", color = "black") +
@@ -323,6 +325,12 @@ ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), 
   geom_text(aes(label = california_count - florida_count), hjust = -0.2, size = 4)
 
 ```
+
+
+
+
+
+
 
 
 ```{r}
@@ -365,7 +373,6 @@ for (unit in unique_items) {
 
 ```
 
-
 Let's look at organic vs non-organic strawberries
 
 ```{r}
@@ -396,10 +403,7 @@ ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
 ```
 
 ```{r}
-print(unique(straw_sur_c$Domain))
+
 
 
 ```
-
-
-
