@@ -1,0 +1,405 @@
+---
+title: "strawberries"
+author: "Elizabeth Rosen"
+format: html
+editor: visual
+---
+
+## USDA NASS
+
+```{r}
+#| label: load libraries
+#| warning: false
+#| message: false
+
+library(knitr)  
+library(kableExtra)
+library(tidyverse)
+library(stringr)
+```
+
+## Read the file
+
+```{r}
+#| label: read data - glimpse 
+
+
+strawberry <- read_csv("strawb_mar6.csv", 
+                       col_names = TRUE,
+                       show_col_types = FALSE)
+
+source("my_functions.R")
+
+```
+
+Examine the data. How is it organized?
+
+```{r}
+
+strawb <- strawberry |> drop_one_value_col()
+
+
+```
+
+```{r}
+#| label: explore strawb data
+
+# assume data is a tibble
+# n_show is the number of rows to show
+
+
+
+show_unique <- function(data, nrows=10 ){
+  # make a tibble items to hold the data to show
+  # browser()
+  a <- nrows * dim(data)[2]  # number of cells in items
+  items <- rep(" ", a) # items will coerce everything to char
+  dim(items) <- c(nrows ,dim(data)[2]) # shape items
+  items <- as_tibble(items)
+  colnames(items) <- colnames(data)
+  # browser()
+  for(i in 1:dim(data)[2]){
+
+    col_items <- unique(data[,i])
+    # row_ex is the number of rows needed 
+    # to make the column length conformable with items
+    row_ex <- nrows - dim(col_items)[1] 
+    if(row_ex >= 0){
+      ex_rows <- tibble(rep(" ",row_ex))
+      colnames(ex_rows) <- colnames(col_items)
+      col_add <- rbind2(col_items, ex_rows)
+      
+    } else if(row_ex < 0){
+      col_add <- col_items[1:10,]
+      
+    }
+
+    items[,i] <- col_add
+
+  }
+  
+  return(items)
+}
+
+## test <- show_unique(strawb, 10)
+
+
+```
+
+```{r}
+#|label: split strawb into census and survey pieces
+
+strw_census <- strawb |> filter(Program == "CENSUS")
+
+strw_survey <- strawb |> filter(Program == "SURVEY")
+
+nrow(strawb) == (nrow(strw_census) + nrow(strw_survey))
+
+```
+
+```{r}
+#| label: examine Census and survey tibbles
+#| warning: false
+
+
+s_census <- strw_census |> drop_one_value_col(prt_val = TRUE)
+
+s_survey <- strw_survey |> drop_one_value_col(prt_val = TRUE)
+
+
+unique_sur <- s_survey |> show_unique(nrows = 10)
+
+unique_cen <- s_census |> show_unique(nrows = 10)
+
+
+strw_census <- s_census |> select(-`State ANSI`)
+
+strw_survey <- s_survey |> select(-`State ANSI`, -`Week Ending`, -Period)
+
+rm(s_census, s_survey, strawberry, strawb, items)
+
+
+```
+
+```{r}
+#| label: work on Census columns
+
+commod <- strw_census$Commodity |> unique()
+
+#### split Data Item
+
+strw_census <- strw_census |>
+  separate_wider_delim(  cols = Commodity,
+                         delim = ",",
+                         names = c("INCOME", 
+                                   "NET CASH FARM",
+                                   "STRAW"
+                                               ),
+                         too_many = "error",
+                         names_sep = " ",
+                         too_few = "align_start"
+  )
+
+
+
+inc <- strw_census$Fruit |> unique()
+
+strw_census <- strw_census |>
+  separate_wider_delim(  cols = Fruit,
+                         delim = ",",
+                         names = c("INCOME", 
+                                   "STRAWB"
+                                               ),
+                         too_many = "error",
+                         too_few = "align_start"
+  )
+
+```
+
+```{r}
+#| label: Assignment shortner results
+
+straw_cen_f <- strw_census |> filter(State == "FLORIDA")
+
+straw_sur_f <- strw_survey |> filter(State == "FLORIDA")
+straw_cen_c <- strw_census |> filter(State == "CALIFORNIA")
+straw_sur_c <- strw_survey |> filter(State == "CALIFORNIA")
+
+rm(strw_census, strw_survey, unique_cen, unique_sur)
+
+```
+
+Chemicals
+
+```{r}
+
+chem_categories_c <- straw_sur_c |> separate_wider_delim(cols='Domain Category',
+                                                            delim=': ',
+                                                            names=c('domain','chemical name'),
+                                                            too_few='align_start',
+                                                            too_many = 'error') %>% select(-domain)
+chem_categories_c <- chem_categories_c |> separate_wider_delim(cols='chemical name',
+                                                               delim='=',
+                                                               names = c('name', 'number'),
+                                                               too_few='align_start',
+                                                               too_many='error') |> separate_wider_delim(cols='name', delim='(', names=c('extra', 'name'), too_few='align_start', too_many='error') %>% select(-extra)
+unique_values_c <- unique(chem_categories_c$`name`)
+
+chem_categories_f <- straw_sur_f |> separate_wider_delim(cols='Domain Category',
+                                                            delim=': ',
+                                                            names=c('domain','chemical name'),
+                                                            too_few='align_start',
+                                                            too_many = 'error') %>% select(-domain)
+chem_categories_f <- chem_categories_f |> separate_wider_delim(cols='chemical name',
+                                                               delim='=',
+                                                               names = c('name', 'number'),
+                                                               too_few='align_start',
+                                                               too_many='error') |> separate_wider_delim(cols='name', delim='(', names=c('extra', 'name'), too_few='align_start', too_many='merge') %>% select(-extra)
+unique_values_f <- unique(chem_categories_f$`name`)
+
+```
+
+Let's look at the top 10 most used chemicals in California and in Florida.
+```{r}
+chems_c <- chem_categories_c %>%
+  filter(name != "TOTAL)") %>%
+  group_by(name) %>% summarise(n = n()) 
+#%>%
+#  arrange(desc(n)) %>%
+ # slice_head(n = 10)
+
+print(chems_c)
+```
+
+```{r}
+chems_c <- chem_categories_c %>%
+  filter(name != "TOTAL)") %>%
+  group_by(name) %>%
+  summarise(n = n()) 
+
+chems_f <- chem_categories_f %>%
+  filter(name != "TOTAL)") %>%
+  group_by(name) %>%
+  summarise(n = n()) 
+
+kable(chems_c, 
+      col.names = c("Chemical", "Count"), 
+      caption = "Count of Chemicals Used in California", 
+      align = "lcc") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "responsive"),
+    full_width = F, 
+    position = "center") %>%
+  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
+  row_spec(1:nrow(chems_c), background = "#f2f2f2") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c("Chemical Information" = 2))
+
+kable(chems_f, 
+      col.names = c("Chemical", "Count"), 
+      caption = "Count of Chemicals Used in Florida", 
+      align = "lcc") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "responsive"),
+    full_width = F, 
+    position = "center") %>%
+  row_spec(0, bold = T, color = "white", background = "#e60000") %>%
+  row_spec(1:nrow(chems_f), background = "#f9f9f9") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c("Chemical Information" = 2))
+```
+
+Which ones do they have in common? Let's focus on these.
+
+```{r}
+common_chems <- intersect(chems_c$name, chems_f$name)
+
+california_chems <- chems_c %>%
+  filter(name %in% common_chems) %>%
+  group_by(name) %>%
+  summarise(california_count = sum(n), .groups = "drop")  # Summing actual counts
+
+# Step 3: Sum the occurrences for each chemical in Florida (chems_f)
+florida_chems <- chems_f %>%
+  filter(name %in% common_chems) %>%
+  group_by(name) %>%
+  summarise(florida_count = sum(n), .groups = "drop")  # Summing actual counts
+
+# Step 4: Merge the counts from California and Florida on the chemical name
+combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
+  arrange(desc(california_count + florida_count))  # Sort by total count
+
+
+kable(combined_chems, 
+      col.names = c("Chemical", "California Count", "Florida Count"), 
+      caption = "Counts of Common Chemicals in California and Florida", 
+      align = "lcc") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "responsive"),
+    full_width = F, 
+    position = "center") %>%
+  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
+  row_spec(1:nrow(combined_chems), background = "#f2f2f2") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c("Chemical Information" = 3))
+```
+
+Let's look for ones where use is different between the two states. 
+
+```{r}
+combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
+  filter(california_count != florida_count) %>%  # Keep only rows where counts differ
+  arrange(desc(abs(california_count - florida_count)))  # Sort by difference in counts
+
+# Step 5: Create the table with kableExtra styling
+kable(combined_chems, 
+      col.names = c("Chemical", "California Count", "Florida Count"), 
+      caption = "Chemicals with Different Counts in California and Florida", 
+      align = "lcc") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "responsive"),
+    full_width = F, 
+    position = "center") %>%
+  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
+  row_spec(1:nrow(combined_chems), background = "#f2f2f2") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c("Chemical Information" = 3))
+
+
+```
+
+Let's visualize this difference
+```{r}
+ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), y = california_count - florida_count, fill = california_count - florida_count > 0)) +
+  geom_bar(stat = "identity", color = "black") +
+  coord_flip() +
+  labs(title = "Difference in Chemical Usage (California - Florida)",
+       x = "Chemical",
+       y = "Difference in Count",
+       fill = "Higher in") +
+  theme_minimal() +
+  theme(legend.position = "top", text = element_text(size = 12)) +
+  scale_fill_manual(values = c("red", "blue"), labels = c("Florida", "California")) +
+  geom_text(aes(label = california_count - florida_count), hjust = -0.2, size = 4)
+
+```
+
+
+```{r}
+straw_sur_c$Item <- trimws(straw_sur_c$Item)
+straw_sur_f$Item <- trimws(straw_sur_f$Item)
+
+unique_items <- intersect(unique(straw_sur_c$Item), unique(straw_sur_f$Item))
+
+for (unit in unique_items) {
+  
+  filtered_c <- straw_sur_c %>%
+    filter(Item == unit) %>%
+    mutate(Value = as.numeric(Value)) %>%
+    drop_na(Value)
+  
+  filtered_f <- straw_sur_f %>%
+    filter(Item == unit) %>%
+    mutate(Value = as.numeric(Value)) %>%
+    drop_na(Value)
+  
+  combined_data <- bind_rows(
+    filtered_c %>% mutate(State = "California"),
+    filtered_f %>% mutate(State = "Florida")
+  )
+  
+  if (nrow(combined_data) > 0) {
+    print(
+      ggplot(combined_data, aes(x = State, y = Value, fill = State)) +
+        geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.shape = 16) +
+        labs(
+          title = paste("Comparison of", unit, "Between California & Florida"),
+          x = "State",
+          y = unit
+        ) +
+        theme_minimal() +
+        scale_fill_manual(values = c("California" = "blue", "Florida" = "red"))
+    )
+  }
+}
+
+```
+
+
+Let's look at organic vs non-organic strawberries
+
+```{r}
+chem_categories_c$Value <- as.numeric(chem_categories_c$Value)
+
+organic_data <- chem_categories_c %>%
+  filter(is.na(name))
+
+pesticide_data <- chem_categories_c %>%
+  filter(!is.na(name))
+
+organic_data$ChemicalType <- "Organic"
+pesticide_data$ChemicalType <- "Pesticide"
+
+combined_data <- bind_rows(organic_data, pesticide_data)
+
+# Plot the histogram with the new 'ChemicalType' variable
+ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
+  geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.shape = 16) +
+  labs(
+    title = "Comparison of Organic vs Pesticide Chemicals",
+    x = "Chemical Type",
+    y = "Value"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(name = "Chemical Type", values = c("Organic" = "darkgreen", "Pesticide" = "skyblue"))
+
+```
+
+```{r}
+print(unique(straw_sur_c$Domain))
+
+
+```
+
+
+
