@@ -9,13 +9,13 @@ editor: visual
 
 ## Let's explore chemical usage between Florida and California strawberry fields and see how that contributes to their overall success in the strawberry business using USDA data.
 
-### Loading in the data and cleaning it up to get the census and survey data. Most of the code for loading in the data is from lecture.
+### Loading in the data and cleaning it up to get the census and survey data. Most of the code for loading in the data is from lecture and is visible in the source code for this document.
 
 ```{r}
 #| label: load libraries
 #| warning: false
 #| message: false
-#| echo: FALSE
+#| echo: false
 library(knitr)  
 library(kableExtra)
 library(tidyverse)
@@ -24,7 +24,9 @@ library(stringr)
 
 ```{r}
 #| label: read data - glimpse 
-#| echo: FALSE
+#| warning: false
+#| message: false
+#| echo: false
 
 strawberry <- read_csv("strawb_mar6.csv", 
                        col_names = TRUE,
@@ -37,14 +39,18 @@ source("my_functions.R")
 Examine the data. How is it organized?
 
 ```{r}
-#| echo: FALSE
+#| warning: false
+#| message: false
+#| echo: false
 strawb <- strawberry |> drop_one_value_col()
 
 ```
 
 ```{r}
 #| label: explore strawb data
-#| echo: FALSE
+#| warning: false
+#| message: false
+#| echo: false
 # assume data is a tibble
 # n_show is the number of rows to show
 
@@ -88,8 +94,11 @@ show_unique <- function(data, nrows=10 ){
 ```
 
 ```{r}
-#|label: split strawb into census and survey pieces
+#| label: split strawb into census and survey pieces
+#| warning: FALSE
+#| message: FALSE
 #| echo: FALSE
+#| results: FALSE
 strw_census <- strawb |> filter(Program == "CENSUS")
 
 strw_survey <- strawb |> filter(Program == "SURVEY")
@@ -101,8 +110,9 @@ nrow(strawb) == (nrow(strw_census) + nrow(strw_survey))
 ```{r}
 #| label: examine Census and survey tibbles
 #| warning: false
-#| echo: FALSE
-
+#| message: false
+#| echo: false
+#| results: FALSE
 s_census <- strw_census |> drop_one_value_col(prt_val = TRUE)
 
 s_survey <- strw_survey |> drop_one_value_col(prt_val = TRUE)
@@ -124,7 +134,9 @@ strw_survey <- s_survey |> select(-`State ANSI`, -`Week Ending`, -Period)
 
 ```{r}
 #| label: work on Census columns
-#| echo: FALSE
+#| warning: false
+#| message: false
+#| echo: false
 commod <- strw_census$Commodity |> unique()
 
 #### split Data Item
@@ -159,7 +171,9 @@ strw_census <- strw_census |>
 
 ```{r}
 #| label: Assignment shortner results
-
+#| warning: false
+#| message: false
+#| echo: false
 straw_cen_f <- strw_census |> filter(State == "FLORIDA")
 
 straw_sur_f <- strw_survey |> filter(State == "FLORIDA")

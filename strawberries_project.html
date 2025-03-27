@@ -21,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -112,34 +78,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="loading-in-the-data-and-cleaning-it-up-to-get-the-census-and-survey-data.-most-of-the-code-for-loading-in-the-data-is-from-lecture." class="level3">
 <h3 class="anchored" data-anchor-id="loading-in-the-data-and-cleaning-it-up-to-get-the-census-and-survey-data.-most-of-the-code-for-loading-in-the-data-is-from-lecture.">Loading in the data and cleaning it up to get the census and survey data. Most of the code for loading in the data is from lecture.</h3>
 <p>Examine the data. How is it organized?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|label: split strawb into census and survey pieces</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"CENSUS"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>strw_survey <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"SURVEY"</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#nrow(strawb) == (nrow(strw_census) + nrow(strw_survey))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Columns dropped:"
-[1] "CENSUS" "YEAR"   NA      </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Columns dropped:"
-[1] "SURVEY"       "STRAWBERRIES" NA            </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>straw_cen_f <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>straw_sur_f <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>straw_cen_c <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>straw_sur_c <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(strw_census, strw_survey, unique_cen, unique_sur)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
 </section>
 <section id="chemical-usage" class="level2">
