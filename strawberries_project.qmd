@@ -188,13 +188,14 @@ rm(strw_census, strw_survey, unique_cen, unique_sur)
 
 ### Let us explore how chemicals are used differently between the two states!
 
-This code is all my own. I used this <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html> for help with the kable extra tables. I also looked up the specific color names so I could experiment with making the table colors look pretty.
+This code is all my own. I used this <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html> for help with the kable extra tables. I also looked up the specific color names so I could experiment with making the table colors look pretty. I used Geeks4Geeks or stack overflow sometimes if I needed a specific function or something we had not gone over. I linked those in the comments of the code.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: FALSE
 
+# separating the names of the chemicals
 chem_categories_c <- straw_sur_c |> separate_wider_delim(cols='Domain Category',
                                                             delim=': ',
                                                             names=c('domain','chemical name'),
@@ -205,8 +206,11 @@ chem_categories_c <- chem_categories_c |> separate_wider_delim(cols='chemical na
                                                                names = c('name', 'number'),
                                                                too_few='align_start',
                                                                too_many='error') |> separate_wider_delim(cols='name', delim='(', names=c('extra', 'name'), too_few='align_start', too_many='error') %>% select(-extra)
+
+# seeing how many diff chemicals there are 
 unique_values_c <- unique(chem_categories_c$`name`)
 
+# same code for florida 
 chem_categories_f <- straw_sur_f |> separate_wider_delim(cols='Domain Category',
                                                             delim=': ',
                                                             names=c('domain','chemical name'),
@@ -228,6 +232,7 @@ unique_values_f <- unique(chem_categories_f$`name`)
 #| message: false
 #| echo: FALSE
 
+# grouping chemicals by name so i can count them up to see usage 
 chems_c <- chem_categories_c %>%
   filter(name != "TOTAL)") %>%
   group_by(name) %>%
@@ -271,6 +276,8 @@ kable(chems_f,
 #| warning: false
 #| message: false
 #| echo: FALSE
+
+# this is where I found the intersect function https://stackoverflow.com/questions/3695677/how-to-find-common-elements-from-multiple-vectors  
 common_chems <- intersect(chems_c$name, chems_f$name)
 
 california_chems <- chems_c %>%
@@ -283,6 +290,8 @@ florida_chems <- chems_f %>%
   group_by(name) %>%
   summarise(florida_count = sum(n), .groups = "drop")  
 
+
+# for full joins I used https://r4ds.hadley.nz/joins.html 
 combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
   arrange(desc(california_count + florida_count))  
 
@@ -354,10 +363,11 @@ ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), 
 #| warning: false
 #| message: false
 #| echo: FALSE
-#some i picked from WHO pesticides pdf table 3
+#some i picked from WHO pesticides pdf table 2 and 3
 moderately_dangerous <- c('PYRETHRINS ', 'FLUTRIAFOL ', "FLUPYRADIFURONE ", "FENPYROXIMATE ", "FENPROPATHRIN ", "DIAZINON ")
 slightly_dangerous <- c("SULFUR ", "SPINOSAD ", "PENTHIOPYRAD ", "FLUXAPYROXAD ", "CYFLUMETOFEN ", "BORAX DECAHYDRATE ", "BACILLUS SUBTILIS ", "GLYPHOSATE ISO. SALT ")
 
+#combine them and make a DF with column names using mutate
 combined_chems <- combined_chems %>%
   mutate(Category = case_when(
     name %in% moderately_dangerous ~ "Moderately Dangerous",
@@ -366,6 +376,7 @@ combined_chems <- combined_chems %>%
   )) %>%
   filter(Category != "Other")  
 
+#summarize the DF so i can graph it 
 dangerous_chems_summary <- combined_chems %>%
   group_by(Category) %>%
   summarise(
@@ -406,6 +417,8 @@ ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
 #| warning: false
 #| message: false
 #| echo: FALSE
+
+
 chem_categories_c$Value <- as.numeric(chem_categories_c$Value)
 
 organic_data <- chem_categories_c %>%
@@ -416,6 +429,7 @@ pesticide_data <- chem_categories_c %>%
 
 organic_data$ChemicalType <- "Organic"
 pesticide_data$ChemicalType <- "Pesticide"
+
 
 combined_data <- bind_rows(organic_data, pesticide_data)
 
@@ -437,11 +451,14 @@ ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
 #| warning: false
 #| message: false
 #| echo: false
+
+# this is where i found the trimws() function: https://stackoverflow.com/questions/2261079/how-can-i-trim-leading-and-trailing-white-space
 straw_sur_c$Item <- trimws(straw_sur_c$Item)
 straw_sur_f$Item <- trimws(straw_sur_f$Item)
 
 unique_items <- intersect(unique(straw_sur_c$Item), unique(straw_sur_f$Item))
 
+#do a bunch of graphs bc there a couple different ways to look at value in the table
 for (unit in unique_items) {
   
   filtered_c <- straw_sur_c %>%
