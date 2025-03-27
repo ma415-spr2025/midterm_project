@@ -1,28 +1,30 @@
 ---
-title: "strawberries"
+title: "Strawberries"
 author: "Elizabeth Rosen"
 format: html
 editor: visual
 ---
 
-## USDA NASS
+# Strawberries
+
+## Let's explore chemical usage between Florida and California strawberry fields and see how that contributes to their overall success in the strawberry business using USDA data.
+
+### Loading in the data and cleaning it up to get the census and survey data. Most of the code for loading in the data is from lecture.
 
 ```{r}
 #| label: load libraries
 #| warning: false
 #| message: false
-
+#| echo: FALSE
 library(knitr)  
 library(kableExtra)
 library(tidyverse)
 library(stringr)
 ```
 
-## Read the file
-
 ```{r}
 #| label: read data - glimpse 
-
+#| echo: FALSE
 
 strawberry <- read_csv("strawb_mar6.csv", 
                        col_names = TRUE,
@@ -35,15 +37,14 @@ source("my_functions.R")
 Examine the data. How is it organized?
 
 ```{r}
-
+#| echo: FALSE
 strawb <- strawberry |> drop_one_value_col()
-
 
 ```
 
 ```{r}
 #| label: explore strawb data
-
+#| echo: FALSE
 # assume data is a tibble
 # n_show is the number of rows to show
 
@@ -88,7 +89,7 @@ show_unique <- function(data, nrows=10 ){
 
 ```{r}
 #|label: split strawb into census and survey pieces
-
+#| echo: FALSE
 strw_census <- strawb |> filter(Program == "CENSUS")
 
 strw_survey <- strawb |> filter(Program == "SURVEY")
@@ -100,7 +101,7 @@ nrow(strawb) == (nrow(strw_census) + nrow(strw_survey))
 ```{r}
 #| label: examine Census and survey tibbles
 #| warning: false
-
+#| echo: FALSE
 
 s_census <- strw_census |> drop_one_value_col(prt_val = TRUE)
 
@@ -116,14 +117,14 @@ strw_census <- s_census |> select(-`State ANSI`)
 
 strw_survey <- s_survey |> select(-`State ANSI`, -`Week Ending`, -Period)
 
-rm(s_census, s_survey, strawberry, strawb, items)
+#rm(s_census, s_survey, strawberry, strawb, items)
 
 
 ```
 
 ```{r}
 #| label: work on Census columns
-
+#| echo: FALSE
 commod <- strw_census$Commodity |> unique()
 
 #### split Data Item
@@ -169,11 +170,17 @@ rm(strw_census, strw_survey, unique_cen, unique_sur)
 
 ```
 
-### Chemical usage
+## Chemical usage
+
+### Let us explore how chemicals are used differently between the two states!
+
+This code is all my own
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: FALSE
+
 chem_categories_c <- straw_sur_c |> separate_wider_delim(cols='Domain Category',
                                                             delim=': ',
                                                             names=c('domain','chemical name'),
@@ -200,12 +207,13 @@ unique_values_f <- unique(chem_categories_f$`name`)
 
 ```
 
-# Let's look at the chemicals used in California and in Florida.
-
+### Let's look at the chemicals used in California and in Florida.
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: FALSE
+
 chems_c <- chem_categories_c %>%
   filter(name != "TOTAL)") %>%
   group_by(name) %>%
@@ -243,27 +251,26 @@ kable(chems_f,
   add_header_above(c("Chemical Information" = 2))
 ```
 
-Which ones do they have in common? Let's focus on these.
+## Which ones do they have in common? Let's focus on these.
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: FALSE
 common_chems <- intersect(chems_c$name, chems_f$name)
 
 california_chems <- chems_c %>%
   filter(name %in% common_chems) %>%
   group_by(name) %>%
-  summarise(california_count = sum(n), .groups = "drop")  # Summing actual counts
+  summarise(california_count = sum(n), .groups = "drop")  
 
-# Step 3: Sum the occurrences for each chemical in Florida (chems_f)
 florida_chems <- chems_f %>%
   filter(name %in% common_chems) %>%
   group_by(name) %>%
-  summarise(florida_count = sum(n), .groups = "drop")  # Summing actual counts
+  summarise(florida_count = sum(n), .groups = "drop")  
 
-# Step 4: Merge the counts from California and Florida on the chemical name
 combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
-  arrange(desc(california_count + florida_count))  # Sort by total count
+  arrange(desc(california_count + florida_count))  
 
 
 kable(combined_chems, 
@@ -280,16 +287,17 @@ kable(combined_chems,
   add_header_above(c("Chemical Information" = 3))
 ```
 
-Let's look for ones where use is different between the two states.
+## Let's look for ones where use is different between the two states.
 
 ```{r}
 #| warning: false
 #| message: false
-combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
-  filter(california_count != florida_count) %>%  # Keep only rows where counts differ
-  arrange(desc(abs(california_count - florida_count)))  # Sort by difference in counts
+#| echo: FALSE
 
-# Step 5: Create the table with kableExtra styling
+combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
+  filter(california_count != florida_count) %>%  
+  arrange(desc(abs(california_count - florida_count)))  
+
 kable(combined_chems, 
       col.names = c("Chemical", "California Count", "Florida Count"), 
       caption = "Chemicals with Different Counts in California and Florida", 
@@ -306,11 +314,12 @@ kable(combined_chems,
 
 ```
 
-Let's visualize this difference
+## Let's visualize this difference
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: FALSE
 ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), y = california_count - florida_count, fill = california_count - florida_count > 0)) +
   geom_bar(stat = "identity", color = "black") +
   coord_flip() +
@@ -325,8 +334,12 @@ ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), 
 
 ```
 
+### I selected the chemicals from this table that are classified as either slightly or moderately dangerous according to the WHO to see which state uses more dangerous chemicals.
 
 ```{r}
+#| warning: false
+#| message: false
+#| echo: FALSE
 #some i picked from WHO pesticides pdf table 3
 moderately_dangerous <- c('PYRETHRINS ', 'FLUTRIAFOL ', "FLUPYRADIFURONE ", "FENPYROXIMATE ", "FENPROPATHRIN ", "DIAZINON ")
 slightly_dangerous <- c("SULFUR ", "SPINOSAD ", "PENTHIOPYRAD ", "FLUXAPYROXAD ", "CYFLUMETOFEN ", "BORAX DECAHYDRATE ", "BACILLUS SUBTILIS ", "GLYPHOSATE ISO. SALT ")
@@ -337,9 +350,8 @@ combined_chems <- combined_chems %>%
     name %in% slightly_dangerous ~ "Slightly Dangerous",
     TRUE ~ "Other"
   )) %>%
-  filter(Category != "Other")  # Keep only chemicals in defined categories
+  filter(Category != "Other")  
 
-# Summarize total counts per category per state
 dangerous_chems_summary <- combined_chems %>%
   group_by(Category) %>%
   summarise(
@@ -348,7 +360,6 @@ dangerous_chems_summary <- combined_chems %>%
   ) %>%
   arrange(desc(California_Total - Florida_Total))
 
-# Create the formatted table
 kable(dangerous_chems_summary, 
       col.names = c("Chemical Type", "California Count", "Florida Count"),
       caption = "Comparison of Dangerous Chemicals in California and Florida",
@@ -364,7 +375,6 @@ dangerous_chems_long <- dangerous_chems_summary %>%
                values_to = "Count") %>%
   mutate(State = recode(State, "California_Total" = "California", "Florida_Total" = "Florida")) # Ensure proper state names
 
-# Visualization
 ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Comparison of Dangerous Chemical Usage",
@@ -376,12 +386,12 @@ ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
 
 ```
 
-
-## Let's look at organic vs non-organic strawberries
+# Let's look at organic vs non-organic strawberries
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: FALSE
 chem_categories_c$Value <- as.numeric(chem_categories_c$Value)
 
 organic_data <- chem_categories_c %>%
@@ -408,11 +418,12 @@ ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
 
 ```
 
+## Let's look at Florida vs California. We already saw that California uses more chemicals than Florida, so it would be interesting to see which state makes more money on strawberries.
 
-Let's look at Florida vs California. We already saw that California uses more chemicals than Florida, so it would be interesting to see which state makes more money on strawberries. 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: false
 straw_sur_c$Item <- trimws(straw_sur_c$Item)
 straw_sur_f$Item <- trimws(straw_sur_f$Item)
 
@@ -451,3 +462,5 @@ for (unit in unique_items) {
 }
 
 ```
+
+Based upon these graphs, it seems that California sells more pounds of strawberries than Florida, but Florida sells more in pounds per acre of fields. I would conclude that Florida has a more lucrative strawberry business for the size of their strawberry fields, and that their reduced use of dangerous chemicals could be beneficial to their business.

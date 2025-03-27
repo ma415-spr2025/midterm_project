@@ -8,7 +8,7 @@
 
 <meta name="author" content="Elizabeth Rosen">
 
-<title>strawberries</title>
+<title>Strawberries</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">strawberries</h1>
+<h1 class="title">Strawberries</h1>
 </div>
 
 
@@ -105,219 +105,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="usda-nass" class="level2">
-<h2 class="anchored" data-anchor-id="usda-nass">USDA NASS</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)  </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="read-the-file" class="level2">
-<h2 class="anchored" data-anchor-id="read-the-file">Read the file</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>strawberry <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"strawb_mar6.csv"</span>, </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">col_names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"my_functions.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="strawberries" class="level1">
+<h1>Strawberries</h1>
+<section id="lets-explore-chemical-usage-between-florida-and-california-strawberry-fields-and-see-how-that-contributes-to-their-overall-success-in-the-strawberry-business-using-usda-data." class="level2">
+<h2 class="anchored" data-anchor-id="lets-explore-chemical-usage-between-florida-and-california-strawberry-fields-and-see-how-that-contributes-to-their-overall-success-in-the-strawberry-business-using-usda-data.">Let’s explore chemical usage between Florida and California strawberry fields and see how that contributes to their overall success in the strawberry business using USDA data.</h2>
+<section id="loading-in-the-data-and-cleaning-it-up-to-get-the-census-and-survey-data.-most-of-the-code-for-loading-in-the-data-is-from-lecture." class="level3">
+<h3 class="anchored" data-anchor-id="loading-in-the-data-and-cleaning-it-up-to-get-the-census-and-survey-data.-most-of-the-code-for-loading-in-the-data-is-from-lecture.">Loading in the data and cleaning it up to get the census and survey data. Most of the code for loading in the data is from lecture.</h3>
 <p>Examine the data. How is it organized?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>strawb <span class="ot">&lt;-</span> strawberry <span class="sc">|&gt;</span> <span class="fu">drop_one_value_col</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|label: split strawb into census and survey pieces</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"CENSUS"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>strw_survey <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"SURVEY"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#nrow(strawb) == (nrow(strw_census) + nrow(strw_survey))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># assume data is a tibble</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># n_show is the number of rows to show</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>show_unique <span class="ot">&lt;-</span> <span class="cf">function</span>(data, <span class="at">nrows=</span><span class="dv">10</span> ){</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make a tibble items to hold the data to show</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># browser()</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> nrows <span class="sc">*</span> <span class="fu">dim</span>(data)[<span class="dv">2</span>]  <span class="co"># number of cells in items</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">" "</span>, a) <span class="co"># items will coerce everything to char</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dim</span>(items) <span class="ot">&lt;-</span> <span class="fu">c</span>(nrows ,<span class="fu">dim</span>(data)[<span class="dv">2</span>]) <span class="co"># shape items</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  items <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(items)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(items) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(data)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># browser()</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(data)[<span class="dv">2</span>]){</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    col_items <span class="ot">&lt;-</span> <span class="fu">unique</span>(data[,i])</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># row_ex is the number of rows needed </span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># to make the column length conformable with items</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    row_ex <span class="ot">&lt;-</span> nrows <span class="sc">-</span> <span class="fu">dim</span>(col_items)[<span class="dv">1</span>] </span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(row_ex <span class="sc">&gt;=</span> <span class="dv">0</span>){</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>      ex_rows <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="fu">rep</span>(<span class="st">" "</span>,row_ex))</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">colnames</span>(ex_rows) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(col_items)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      col_add <span class="ot">&lt;-</span> <span class="fu">rbind2</span>(col_items, ex_rows)</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span>(row_ex <span class="sc">&lt;</span> <span class="dv">0</span>){</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      col_add <span class="ot">&lt;-</span> col_items[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,]</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    items[,i] <span class="ot">&lt;-</span> col_add</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(items)</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="do">## test &lt;- show_unique(strawb, 10)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|label: split strawb into census and survey pieces</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"CENSUS"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>strw_survey <span class="ot">&lt;-</span> strawb <span class="sc">|&gt;</span> <span class="fu">filter</span>(Program <span class="sc">==</span> <span class="st">"SURVEY"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(strawb) <span class="sc">==</span> (<span class="fu">nrow</span>(strw_census) <span class="sc">+</span> <span class="fu">nrow</span>(strw_survey))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>s_census <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">drop_one_value_col</span>(<span class="at">prt_val =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Columns dropped:"
 [1] "CENSUS" "YEAR"   NA      </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>s_survey <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">drop_one_value_col</span>(<span class="at">prt_val =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Columns dropped:"
 [1] "SURVEY"       "STRAWBERRIES" NA            </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>unique_sur <span class="ot">&lt;-</span> s_survey <span class="sc">|&gt;</span> <span class="fu">show_unique</span>(<span class="at">nrows =</span> <span class="dv">10</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>unique_cen <span class="ot">&lt;-</span> s_census <span class="sc">|&gt;</span> <span class="fu">show_unique</span>(<span class="at">nrows =</span> <span class="dv">10</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> s_census <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">State ANSI</span><span class="st">`</span>)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>strw_survey <span class="ot">&lt;-</span> s_survey <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">State ANSI</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Week Ending</span><span class="st">`</span>, <span class="sc">-</span>Period)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(s_census, s_survey, strawberry, strawb, items)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>commod <span class="ot">&lt;-</span> strw_census<span class="sc">$</span>Commodity <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">#### split Data Item</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(  <span class="at">cols =</span> Commodity,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">delim =</span> <span class="st">","</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"INCOME"</span>, </span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"NET CASH FARM"</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"STRAW"</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                                               ),</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">too_many =</span> <span class="st">"error"</span>,</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                         <span class="at">names_sep =</span> <span class="st">" "</span>,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                         <span class="at">too_few =</span> <span class="st">"align_start"</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>inc <span class="ot">&lt;-</span> strw_census<span class="sc">$</span>Fruit <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>strw_census <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(  <span class="at">cols =</span> Fruit,</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>                         <span class="at">delim =</span> <span class="st">","</span>,</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>                         <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"INCOME"</span>, </span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"STRAWB"</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>                                               ),</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>                         <span class="at">too_many =</span> <span class="st">"error"</span>,</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>                         <span class="at">too_few =</span> <span class="st">"align_start"</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>straw_cen_f <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>straw_sur_f <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>straw_cen_c <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>straw_sur_c <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(strw_census, strw_survey, unique_cen, unique_sur)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+</section>
+<section id="chemical-usage" class="level2">
+<h2 class="anchored" data-anchor-id="chemical-usage">Chemical usage</h2>
+<section id="let-us-explore-how-chemicals-are-used-differently-between-the-two-states" class="level3">
+<h3 class="anchored" data-anchor-id="let-us-explore-how-chemicals-are-used-differently-between-the-two-states">Let us explore how chemicals are used differently between the two states!</h3>
+<p>This code is all my own</p>
+</section>
+<section id="lets-look-at-the-chemicals-used-in-california-and-in-florida." class="level3">
+<h3 class="anchored" data-anchor-id="lets-look-at-the-chemicals-used-in-california-and-in-florida.">Let’s look at the chemicals used in California and in Florida.</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>straw_cen_f <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>straw_sur_f <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"FLORIDA"</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>straw_cen_c <span class="ot">&lt;-</span> strw_census <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>straw_sur_c <span class="ot">&lt;-</span> strw_survey <span class="sc">|&gt;</span> <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"CALIFORNIA"</span>)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(strw_census, strw_survey, unique_cen, unique_sur)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="chemicals" class="level3">
-<h3 class="anchored" data-anchor-id="chemicals">Chemicals</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>chem_categories_c <span class="ot">&lt;-</span> straw_sur_c <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'Domain Category'</span>,</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">delim=</span><span class="st">': '</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">names=</span><span class="fu">c</span>(<span class="st">'domain'</span>,<span class="st">'chemical name'</span>),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">too_few=</span><span class="st">'align_start'</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">too_many =</span> <span class="st">'error'</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>domain)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>chem_categories_c <span class="ot">&lt;-</span> chem_categories_c <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'chemical name'</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">delim=</span><span class="st">'='</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">names =</span> <span class="fu">c</span>(<span class="st">'name'</span>, <span class="st">'number'</span>),</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">too_few=</span><span class="st">'align_start'</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">too_many=</span><span class="st">'error'</span>) <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'name'</span>, <span class="at">delim=</span><span class="st">'('</span>, <span class="at">names=</span><span class="fu">c</span>(<span class="st">'extra'</span>, <span class="st">'name'</span>), <span class="at">too_few=</span><span class="st">'align_start'</span>, <span class="at">too_many=</span><span class="st">'error'</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>extra)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>unique_values_c <span class="ot">&lt;-</span> <span class="fu">unique</span>(chem_categories_c<span class="sc">$</span><span class="st">`</span><span class="at">name</span><span class="st">`</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>chem_categories_f <span class="ot">&lt;-</span> straw_sur_f <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'Domain Category'</span>,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">delim=</span><span class="st">': '</span>,</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">names=</span><span class="fu">c</span>(<span class="st">'domain'</span>,<span class="st">'chemical name'</span>),</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">too_few=</span><span class="st">'align_start'</span>,</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">too_many =</span> <span class="st">'error'</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>domain)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>chem_categories_f <span class="ot">&lt;-</span> chem_categories_f <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'chemical name'</span>,</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">delim=</span><span class="st">'='</span>,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">names =</span> <span class="fu">c</span>(<span class="st">'name'</span>, <span class="st">'number'</span>),</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">too_few=</span><span class="st">'align_start'</span>,</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>                                                               <span class="at">too_many=</span><span class="st">'error'</span>) <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(<span class="at">cols=</span><span class="st">'name'</span>, <span class="at">delim=</span><span class="st">'('</span>, <span class="at">names=</span><span class="fu">c</span>(<span class="st">'extra'</span>, <span class="st">'name'</span>), <span class="at">too_few=</span><span class="st">'align_start'</span>, <span class="at">too_many=</span><span class="st">'merge'</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>extra)</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>unique_values_f <span class="ot">&lt;-</span> <span class="fu">unique</span>(chem_categories_f<span class="sc">$</span><span class="st">`</span><span class="at">name</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Let’s look at the top 10 most used chemicals in California and in Florida.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>chems_c <span class="ot">&lt;-</span> chem_categories_c <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">!=</span> <span class="st">"TOTAL)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#%&gt;%</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  arrange(desc(n)) %&gt;%</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a> <span class="co"># slice_head(n = 10)</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(chems_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 120 × 2
-   name                                          n
-   &lt;chr&gt;                                     &lt;int&gt;
- 1 "ABAMECTIN "                                 10
- 2 "ACEQUINOCYL "                               10
- 3 "ACETAMIPRID "                               10
- 4 "ACIBENZOLAR-S-METHYL "                      10
- 5 "AZADIRACHTIN "                              10
- 6 "AZOXYSTROBIN "                              10
- 7 "BACILLUS AMYLOLIQUEFAC F727 "                5
- 8 "BACILLUS AMYLOLIQUEFACIENS MBI 600 "         5
- 9 "BACILLUS AMYLOLIQUEFACIENS STRAIN D747 "    10
-10 "BACILLUS PUMILUS "                           5
-# ℹ 110 more rows</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>chems_c <span class="ot">&lt;-</span> chem_categories_c <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">!=</span> <span class="st">"TOTAL)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>chems_f <span class="ot">&lt;-</span> chem_categories_f <span class="sc">%&gt;%</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">!=</span> <span class="st">"TOTAL)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) </span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(chems_c, </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Chemical"</span>, <span class="st">"Count"</span>), </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Count of Chemicals Used in California"</span>, </span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">"lcc"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> F, </span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#0073e6"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(chems_c), <span class="at">background =</span> <span class="st">"#f2f2f2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> T) <span class="sc">%&gt;%</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">"Chemical Information"</span> <span class="ot">=</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="table-responsive">
 <table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
@@ -824,18 +657,6 @@ Chemical Information
 
 
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(chems_f, </span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Chemical"</span>, <span class="st">"Count"</span>), </span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Count of Chemicals Used in Florida"</span>, </span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">"lcc"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> F, </span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#e60000"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(chems_f), <span class="at">background =</span> <span class="st">"#f9f9f9"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> T) <span class="sc">%&gt;%</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">"Chemical Information"</span> <span class="ot">=</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="table-responsive">
 <table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
@@ -1255,38 +1076,11 @@ Chemical Information
 
 </div>
 </div>
-<p>Which ones do they have in common? Let’s focus on these.</p>
+</section>
+</section>
+<section id="which-ones-do-they-have-in-common-lets-focus-on-these." class="level2">
+<h2 class="anchored" data-anchor-id="which-ones-do-they-have-in-common-lets-focus-on-these.">Which ones do they have in common? Let’s focus on these.</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>common_chems <span class="ot">&lt;-</span> <span class="fu">intersect</span>(chems_c<span class="sc">$</span>name, chems_f<span class="sc">$</span>name)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>california_chems <span class="ot">&lt;-</span> chems_c <span class="sc">%&gt;%</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">%in%</span> common_chems) <span class="sc">%&gt;%</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">california_count =</span> <span class="fu">sum</span>(n), <span class="at">.groups =</span> <span class="st">"drop"</span>)  <span class="co"># Summing actual counts</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Sum the occurrences for each chemical in Florida (chems_f)</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>florida_chems <span class="ot">&lt;-</span> chems_f <span class="sc">%&gt;%</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">%in%</span> common_chems) <span class="sc">%&gt;%</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">florida_count =</span> <span class="fu">sum</span>(n), <span class="at">.groups =</span> <span class="st">"drop"</span>)  <span class="co"># Summing actual counts</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Merge the counts from California and Florida on the chemical name</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>combined_chems <span class="ot">&lt;-</span> <span class="fu">full_join</span>(california_chems, florida_chems, <span class="at">by =</span> <span class="st">"name"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(california_count <span class="sc">+</span> florida_count))  <span class="co"># Sort by total count</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(combined_chems, </span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Chemical"</span>, <span class="st">"California Count"</span>, <span class="st">"Florida Count"</span>), </span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Counts of Common Chemicals in California and Florida"</span>, </span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">"lcc"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> F, </span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#0073e6"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(combined_chems), <span class="at">background =</span> <span class="st">"#f2f2f2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> T) <span class="sc">%&gt;%</span></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">"Chemical Information"</span> <span class="ot">=</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="table-responsive">
 <table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
@@ -1641,25 +1435,10 @@ Chemical Information
 
 </div>
 </div>
-<p>Let’s look for ones where use is different between the two states.</p>
+</section>
+<section id="lets-look-for-ones-where-use-is-different-between-the-two-states." class="level2">
+<h2 class="anchored" data-anchor-id="lets-look-for-ones-where-use-is-different-between-the-two-states.">Let’s look for ones where use is different between the two states.</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>combined_chems <span class="ot">&lt;-</span> <span class="fu">full_join</span>(california_chems, florida_chems, <span class="at">by =</span> <span class="st">"name"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(california_count <span class="sc">!=</span> florida_count) <span class="sc">%&gt;%</span>  <span class="co"># Keep only rows where counts differ</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(<span class="fu">abs</span>(california_count <span class="sc">-</span> florida_count)))  <span class="co"># Sort by difference in counts</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 5: Create the table with kableExtra styling</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(combined_chems, </span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Chemical"</span>, <span class="st">"California Count"</span>, <span class="st">"Florida Count"</span>), </span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Chemicals with Different Counts in California and Florida"</span>, </span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">"lcc"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> F, </span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#0073e6"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(combined_chems), <span class="at">background =</span> <span class="st">"#f2f2f2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> T) <span class="sc">%&gt;%</span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">"Chemical Information"</span> <span class="ot">=</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="table-responsive">
 <table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
@@ -1799,19 +1578,49 @@ Chemical Information
 
 </div>
 </div>
-<p>Let’s visualize this difference</p>
+</section>
+<section id="lets-visualize-this-difference" class="level2">
+<h2 class="anchored" data-anchor-id="lets-visualize-this-difference">Let’s visualize this difference</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_chems, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(name, california_count <span class="sc">-</span> florida_count), <span class="at">y =</span> california_count <span class="sc">-</span> florida_count, <span class="at">fill =</span> california_count <span class="sc">-</span> florida_count <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Difference in Chemical Usage (California - Florida)"</span>,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Chemical"</span>,</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Difference in Count"</span>,</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Higher in"</span>) <span class="sc">+</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>, <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Florida"</span>, <span class="st">"California"</span>)) <span class="sc">+</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> california_count <span class="sc">-</span> florida_count), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="strawberries_project_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="i-selected-the-chemicals-from-this-table-that-are-classified-as-either-slightly-or-moderately-dangerous-according-to-the-who-to-see-which-state-uses-more-dangerous-chemicals." class="level3">
+<h3 class="anchored" data-anchor-id="i-selected-the-chemicals-from-this-table-that-are-classified-as-either-slightly-or-moderately-dangerous-according-to-the-who-to-see-which-state-uses-more-dangerous-chemicals.">I selected the chemicals from this table that are classified as either slightly or moderately dangerous according to the WHO to see which state uses more dangerous chemicals.</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<caption>Comparison of Dangerous Chemicals in California and Florida</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(0, 115, 230, 255) !important;">Chemical Type</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(0, 115, 230, 255) !important;">California Count</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(0, 115, 230, 255) !important;">Florida Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Slightly Dangerous</td>
+<td style="text-align: center;">75</td>
+<td style="text-align: center;">45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Moderately Dangerous</td>
+<td style="text-align: center;">55</td>
+<td style="text-align: center;">35</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1820,47 +1629,23 @@ Chemical Information
 </div>
 </div>
 </div>
+</section>
+</section>
+</section>
+<section id="lets-look-at-organic-vs-non-organic-strawberries" class="level1">
+<h1>Let’s look at organic vs non-organic strawberries</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#some i picked from WHO pesticides pdf table 3</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>moderately_dangerous <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Bifenthrin'</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>,<span class="st">''</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="strawberries_project_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
+</div>
+</div>
+<section id="lets-look-at-florida-vs-california.-we-already-saw-that-california-uses-more-chemicals-than-florida-so-it-would-be-interesting-to-see-which-state-makes-more-money-on-strawberries." class="level2">
+<h2 class="anchored" data-anchor-id="lets-look-at-florida-vs-california.-we-already-saw-that-california-uses-more-chemicals-than-florida-so-it-would-be-interesting-to-see-which-state-makes-more-money-on-strawberries.">Let’s look at Florida vs California. We already saw that California uses more chemicals than Florida, so it would be interesting to see which state makes more money on strawberries.</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>straw_sur_c<span class="sc">$</span>Item <span class="ot">&lt;-</span> <span class="fu">trimws</span>(straw_sur_c<span class="sc">$</span>Item)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>straw_sur_f<span class="sc">$</span>Item <span class="ot">&lt;-</span> <span class="fu">trimws</span>(straw_sur_f<span class="sc">$</span>Item)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>unique_items <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">unique</span>(straw_sur_c<span class="sc">$</span>Item), <span class="fu">unique</span>(straw_sur_f<span class="sc">$</span>Item))</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (unit <span class="cf">in</span> unique_items) {</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  filtered_c <span class="ot">&lt;-</span> straw_sur_c <span class="sc">%&gt;%</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Item <span class="sc">==</span> unit) <span class="sc">%&gt;%</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Value =</span> <span class="fu">as.numeric</span>(Value)) <span class="sc">%&gt;%</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">drop_na</span>(Value)</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  filtered_f <span class="ot">&lt;-</span> straw_sur_f <span class="sc">%&gt;%</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Item <span class="sc">==</span> unit) <span class="sc">%&gt;%</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Value =</span> <span class="fu">as.numeric</span>(Value)) <span class="sc">%&gt;%</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">drop_na</span>(Value)</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    filtered_c <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">"California"</span>),</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    filtered_f <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">"Florida"</span>)</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(combined_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(</span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Value, <span class="at">fill =</span> State)) <span class="sc">+</span></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">outlier.color =</span> <span class="st">"black"</span>, <span class="at">outlier.shape =</span> <span class="dv">16</span>) <span class="sc">+</span></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Comparison of"</span>, unit, <span class="st">"Between California &amp; Florida"</span>),</span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">x =</span> <span class="st">"State"</span>,</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>          <span class="at">y =</span> unit</span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"California"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Florida"</span> <span class="ot">=</span> <span class="st">"red"</span>))</span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1897,42 +1682,8 @@ Chemical Information
 </div>
 </div>
 </div>
+<p>Based upon these graphs, it seems that California sells more pounds of strawberries than Florida, but Florida sells more in pounds per acre of fields. I would conclude that Florida has a more lucrative strawberry business for the size of their strawberry fields, and that their reduced use of dangerous chemicals could be beneficial to their business.</p>
 </section>
-</section>
-<section id="lets-look-at-organic-vs-non-organic-strawberries" class="level2">
-<h2 class="anchored" data-anchor-id="lets-look-at-organic-vs-non-organic-strawberries">Let’s look at organic vs non-organic strawberries</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>chem_categories_c<span class="sc">$</span>Value <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(chem_categories_c<span class="sc">$</span>Value)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>organic_data <span class="ot">&lt;-</span> chem_categories_c <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(name))</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>pesticide_data <span class="ot">&lt;-</span> chem_categories_c <span class="sc">%&gt;%</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(name))</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>organic_data<span class="sc">$</span>ChemicalType <span class="ot">&lt;-</span> <span class="st">"Organic"</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>pesticide_data<span class="sc">$</span>ChemicalType <span class="ot">&lt;-</span> <span class="st">"Pesticide"</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(organic_data, pesticide_data)</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the histogram with the new 'ChemicalType' variable</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> ChemicalType, <span class="at">y =</span> Value, <span class="at">fill =</span> ChemicalType)) <span class="sc">+</span></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">outlier.color =</span> <span class="st">"black"</span>, <span class="at">outlier.shape =</span> <span class="dv">16</span>) <span class="sc">+</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Comparison of Organic vs Pesticide Chemicals"</span>,</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Chemical Type"</span>,</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Value"</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">name =</span> <span class="st">"Chemical Type"</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Organic"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>, <span class="st">"Pesticide"</span> <span class="ot">=</span> <span class="st">"skyblue"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="strawberries_project_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
 </section>
 
 </main>
