@@ -188,7 +188,7 @@ rm(strw_census, strw_survey, unique_cen, unique_sur)
 
 ### Let us explore how chemicals are used differently between the two states!
 
-This code is all my own
+This code is all my own. I used this <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html> for help with the kable extra tables. I also looked up the specific color names so I could experiment with making the table colors look pretty.
 
 ```{r}
 #| warning: false
@@ -419,7 +419,6 @@ pesticide_data$ChemicalType <- "Pesticide"
 
 combined_data <- bind_rows(organic_data, pesticide_data)
 
-# Plot the histogram with the new 'ChemicalType' variable
 ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
   geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.shape = 16) +
   labs(
