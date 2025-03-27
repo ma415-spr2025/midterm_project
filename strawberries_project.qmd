@@ -169,10 +169,11 @@ rm(strw_census, strw_survey, unique_cen, unique_sur)
 
 ```
 
-Chemicals
+### Chemical usage
 
 ```{r}
-
+#| warning: false
+#| message: false
 chem_categories_c <- straw_sur_c |> separate_wider_delim(cols='Domain Category',
                                                             delim=': ',
                                                             names=c('domain','chemical name'),
@@ -199,20 +200,12 @@ unique_values_f <- unique(chem_categories_f$`name`)
 
 ```
 
-Let's look at the top 10 most used chemicals in California and in Florida.
+# Let's look at the chemicals used in California and in Florida.
+
 
 ```{r}
-chems_c <- chem_categories_c %>%
-  filter(name != "TOTAL)") %>%
-  group_by(name) %>% summarise(n = n()) 
-#%>%
-#  arrange(desc(n)) %>%
- # slice_head(n = 10)
-
-print(chems_c)
-```
-
-```{r}
+#| warning: false
+#| message: false
 chems_c <- chem_categories_c %>%
   filter(name != "TOTAL)") %>%
   group_by(name) %>%
@@ -253,6 +246,8 @@ kable(chems_f,
 Which ones do they have in common? Let's focus on these.
 
 ```{r}
+#| warning: false
+#| message: false
 common_chems <- intersect(chems_c$name, chems_f$name)
 
 california_chems <- chems_c %>%
@@ -288,6 +283,8 @@ kable(combined_chems,
 Let's look for ones where use is different between the two states.
 
 ```{r}
+#| warning: false
+#| message: false
 combined_chems <- full_join(california_chems, florida_chems, by = "name") %>%
   filter(california_count != florida_count) %>%  # Keep only rows where counts differ
   arrange(desc(abs(california_count - florida_count)))  # Sort by difference in counts
@@ -312,6 +309,8 @@ kable(combined_chems,
 Let's visualize this difference
 
 ```{r}
+#| warning: false
+#| message: false
 ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), y = california_count - florida_count, fill = california_count - florida_count > 0)) +
   geom_bar(stat = "identity", color = "black") +
   coord_flip() +
@@ -327,13 +326,93 @@ ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), 
 ```
 
 
+```{r}
+#some i picked from WHO pesticides pdf table 3
+moderately_dangerous <- c('PYRETHRINS ', 'FLUTRIAFOL ', "FLUPYRADIFURONE ", "FENPYROXIMATE ", "FENPROPATHRIN ", "DIAZINON ")
+slightly_dangerous <- c("SULFUR ", "SPINOSAD ", "PENTHIOPYRAD ", "FLUXAPYROXAD ", "CYFLUMETOFEN ", "BORAX DECAHYDRATE ", "BACILLUS SUBTILIS ", "GLYPHOSATE ISO. SALT ")
+
+combined_chems <- combined_chems %>%
+  mutate(Category = case_when(
+    name %in% moderately_dangerous ~ "Moderately Dangerous",
+    name %in% slightly_dangerous ~ "Slightly Dangerous",
+    TRUE ~ "Other"
+  )) %>%
+  filter(Category != "Other")  # Keep only chemicals in defined categories
+
+# Summarize total counts per category per state
+dangerous_chems_summary <- combined_chems %>%
+  group_by(Category) %>%
+  summarise(
+    California_Total = sum(california_count, na.rm = TRUE),
+    Florida_Total = sum(florida_count, na.rm = TRUE)
+  ) %>%
+  arrange(desc(California_Total - Florida_Total))
+
+# Create the formatted table
+kable(dangerous_chems_summary, 
+      col.names = c("Chemical Type", "California Count", "Florida Count"),
+      caption = "Comparison of Dangerous Chemicals in California and Florida",
+      align = "lcc") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive"),
+                full_width = F, position = "center") %>%
+  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
+  column_spec(1, bold = T)
+
+dangerous_chems_long <- dangerous_chems_summary %>%
+  pivot_longer(cols = c(California_Total, Florida_Total), 
+               names_to = "State", 
+               values_to = "Count") %>%
+  mutate(State = recode(State, "California_Total" = "California", "Florida_Total" = "Florida")) # Ensure proper state names
+
+# Visualization
+ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Dangerous Chemical Usage",
+       x = "Chemical Type",
+       y = "Count",
+       fill = "State") +
+  theme_minimal() +
+  scale_fill_manual(values = c("California" = "blue", "Florida" = "red")) # Ensure labels match `State` column
+
+```
 
 
-
-
-
+## Let's look at organic vs non-organic strawberries
 
 ```{r}
+#| warning: false
+#| message: false
+chem_categories_c$Value <- as.numeric(chem_categories_c$Value)
+
+organic_data <- chem_categories_c %>%
+  filter(is.na(name))
+
+pesticide_data <- chem_categories_c %>%
+  filter(!is.na(name))
+
+organic_data$ChemicalType <- "Organic"
+pesticide_data$ChemicalType <- "Pesticide"
+
+combined_data <- bind_rows(organic_data, pesticide_data)
+
+# Plot the histogram with the new 'ChemicalType' variable
+ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
+  geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.shape = 16) +
+  labs(
+    title = "Comparison of Organic vs Pesticide Chemicals",
+    x = "Chemical Type",
+    y = "Value"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(name = "Chemical Type", values = c("Organic" = "darkgreen", "Pesticide" = "skyblue"))
+
+```
+
+
+Let's look at Florida vs California. We already saw that California uses more chemicals than Florida, so it would be interesting to see which state makes more money on strawberries. 
+```{r}
+#| warning: false
+#| message: false
 straw_sur_c$Item <- trimws(straw_sur_c$Item)
 straw_sur_f$Item <- trimws(straw_sur_f$Item)
 
@@ -370,40 +449,5 @@ for (unit in unique_items) {
     )
   }
 }
-
-```
-
-Let's look at organic vs non-organic strawberries
-
-```{r}
-chem_categories_c$Value <- as.numeric(chem_categories_c$Value)
-
-organic_data <- chem_categories_c %>%
-  filter(is.na(name))
-
-pesticide_data <- chem_categories_c %>%
-  filter(!is.na(name))
-
-organic_data$ChemicalType <- "Organic"
-pesticide_data$ChemicalType <- "Pesticide"
-
-combined_data <- bind_rows(organic_data, pesticide_data)
-
-# Plot the histogram with the new 'ChemicalType' variable
-ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
-  geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.shape = 16) +
-  labs(
-    title = "Comparison of Organic vs Pesticide Chemicals",
-    x = "Chemical Type",
-    y = "Value"
-  ) +
-  theme_minimal() +
-  scale_fill_manual(name = "Chemical Type", values = c("Organic" = "darkgreen", "Pesticide" = "skyblue"))
-
-```
-
-```{r}
-
-
 
 ```
