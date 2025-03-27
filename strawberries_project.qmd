@@ -246,8 +246,8 @@ kable(chems_c,
     bootstrap_options = c("striped", "hover", "responsive"),
     full_width = F, 
     position = "center") %>%
-  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
-  row_spec(1:nrow(chems_c), background = "#f2f2f2") %>%
+  row_spec(0, bold = T, color = "white", background = "powderblue") %>%
+  row_spec(1:nrow(chems_c), background = "grey97") %>%
   column_spec(1, bold = T) %>%
   add_header_above(c("Chemical Information" = 2))
 
@@ -259,8 +259,8 @@ kable(chems_f,
     bootstrap_options = c("striped", "hover", "responsive"),
     full_width = F, 
     position = "center") %>%
-  row_spec(0, bold = T, color = "white", background = "#e60000") %>%
-  row_spec(1:nrow(chems_f), background = "#f9f9f9") %>%
+  row_spec(0, bold = T, color = "white", background = "pink") %>%
+  row_spec(1:nrow(chems_f), background = "grey97") %>%
   column_spec(1, bold = T) %>%
   add_header_above(c("Chemical Information" = 2))
 ```
@@ -295,8 +295,8 @@ kable(combined_chems,
     bootstrap_options = c("striped", "hover", "responsive"),
     full_width = F, 
     position = "center") %>%
-  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
-  row_spec(1:nrow(combined_chems), background = "#f2f2f2") %>%
+  row_spec(0, bold = T, color = "white", background = "powderblue") %>%
+  row_spec(1:nrow(combined_chems), background = "grey97") %>%
   column_spec(1, bold = T) %>%
   add_header_above(c("Chemical Information" = 3))
 ```
@@ -320,8 +320,8 @@ kable(combined_chems,
     bootstrap_options = c("striped", "hover", "responsive"),
     full_width = F, 
     position = "center") %>%
-  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
-  row_spec(1:nrow(combined_chems), background = "#f2f2f2") %>%
+  row_spec(0, bold = T, color = "white", background = "pink") %>%
+  row_spec(1:nrow(combined_chems), background = "grey97") %>%
   column_spec(1, bold = T) %>%
   add_header_above(c("Chemical Information" = 3))
 
@@ -343,7 +343,7 @@ ggplot(combined_chems, aes(x = reorder(name, california_count - florida_count), 
        fill = "Higher in") +
   theme_minimal() +
   theme(legend.position = "top", text = element_text(size = 12)) +
-  scale_fill_manual(values = c("red", "blue"), labels = c("Florida", "California")) +
+  scale_fill_manual(values = c("pink", "powderblue"), labels = c("Florida", "California")) +
   geom_text(aes(label = california_count - florida_count), hjust = -0.2, size = 4)
 
 ```
@@ -380,14 +380,14 @@ kable(dangerous_chems_summary,
       align = "lcc") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "responsive"),
                 full_width = F, position = "center") %>%
-  row_spec(0, bold = T, color = "white", background = "#0073e6") %>%
+  row_spec(0, bold = T, color = "white", background = "lavender") %>%
   column_spec(1, bold = T)
 
 dangerous_chems_long <- dangerous_chems_summary %>%
   pivot_longer(cols = c(California_Total, Florida_Total), 
                names_to = "State", 
                values_to = "Count") %>%
-  mutate(State = recode(State, "California_Total" = "California", "Florida_Total" = "Florida")) # Ensure proper state names
+  mutate(State = recode(State, "California_Total" = "California", "Florida_Total" = "Florida")) 
 
 ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
   geom_bar(stat = "identity", position = "dodge") +
@@ -396,7 +396,7 @@ ggplot(dangerous_chems_long, aes(x = Category, y = Count, fill = State)) +
        y = "Count",
        fill = "State") +
   theme_minimal() +
-  scale_fill_manual(values = c("California" = "blue", "Florida" = "red")) # Ensure labels match `State` column
+  scale_fill_manual(values = c("California" = "powderblue", "Florida" = "pink")) 
 
 ```
 
@@ -428,7 +428,7 @@ ggplot(combined_data, aes(x = ChemicalType, y = Value, fill = ChemicalType)) +
     y = "Value"
   ) +
   theme_minimal() +
-  scale_fill_manual(name = "Chemical Type", values = c("Organic" = "darkgreen", "Pesticide" = "skyblue"))
+  scale_fill_manual(name = "Chemical Type", values = c("Organic" = "olivedrab3", "Pesticide" = "coral"))
 
 ```
 
@@ -470,7 +470,7 @@ for (unit in unique_items) {
           y = unit
         ) +
         theme_minimal() +
-        scale_fill_manual(values = c("California" = "blue", "Florida" = "red"))
+        scale_fill_manual(values = c("California" = "powderblue", "Florida" = "pink"))
     )
   }
 }
